@@ -196,6 +196,18 @@ const manager = () => {
   return managerArr;
 }
 
+const addDepartment = () => {
+
+};
+
+const addRole = () => {
+
+};
+
+const updateEmp = () => {
+  
+};
+
 
 
 module.exports = connection;
