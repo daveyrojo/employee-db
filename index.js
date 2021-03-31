@@ -76,7 +76,7 @@ const runQuery = () => {
         addEmp();
         break;
 
-      case "Add Deparment":
+      case "Add Department":
         addDepartment();
         break;
       
@@ -197,7 +197,25 @@ const manager = () => {
 }
 
 const addDepartment = () => {
-
+  inquirer.prompt([
+    {
+      name: "department",
+      type: "input",
+      message: "What is the departments name?"
+    },
+  ])
+  .then((res) => {
+    connection.query(
+      "INSERT INTO department SET ? ",
+      {
+        name: res.department,
+      },
+      (err) => {
+        if (err) throw err;
+        runQuery();
+      }
+    );
+  })
 };
 
 const addRole = () => {
@@ -205,7 +223,7 @@ const addRole = () => {
 };
 
 const updateEmp = () => {
-  
+
 };
 
 
