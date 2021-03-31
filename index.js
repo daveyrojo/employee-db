@@ -221,6 +221,52 @@ const addDepartment = () => {
 const addRole = () => {
   connection.query(
     "SELECT role.title AS Title, role.salary AS Salary, role.department_id AS Department FROM role",
+    (err, res) => {
+      inquirer
+        .prompt([
+          {
+            name: "role",
+            type: "input",
+            message: "What's the poisitons role?",
+          },
+          {
+            name: "salary",
+            type: "input",
+            message: "What's the Salary?",
+          },
+          {
+            name: "department",
+            type: "rawlist",
+            message: "What's the role's department?",
+            choices: department(),
+          },
+        ])
+        .then((res) => {
+          connection.query(
+            "INSERT INTO role SET ? ",
+            {
+              title: res.role,
+              salary: res.salary,
+              department_id: res.department,
+            },
+            (err) => {
+              if (err) throw err;
+              runQuery();
+            }
+          );
+        });
+    }
+  );
+};
+
+const department = () => {
+  connection.query("SELECT * FROM department", (err, res) => {
+    if (err) throw err;
+    for (var i = 0; i < res.length; i++) {
+      deptArr.push(res[i].name);
+    }
+  });
+  return deptArr;
 };
 
 const updateEmp = () => {
