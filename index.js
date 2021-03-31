@@ -133,23 +133,23 @@ const addEmp = () => {
     {
       name: "firstname",
       type: "input",
-      message: "What is the employee's first name?",
+      message: "What's the employee's first name?",
     },
     {
       name: "lastname",
       type: "input",
-      message: "What is the employee's last name?",
+      message: "What's the employee's last name?",
     },
     {
       name: "role",
       type: "list",
-      message: "What is the employee's role?",
+      message: "What's the employee's role?",
       choices: role(),
     },
     {
       name: "choice",
       type: "rawlist",
-      message: "Whats the employee's managers name?",
+      message: "What's the employee's managers name?",
       choices: manager(),
     },
   ])
