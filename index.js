@@ -106,6 +106,16 @@ const viewAllEmp = () => {
   );
 };
 
+const viewByDepartment = () => {
+    connection.query(
+      "SELECT department.name AS department, role.title, employee.id, employee.first_name, employee.last_name FROM employee LEFT JOIN role ON (role.id = employee.role_id) LEFT JOIN department ON (department.id = role.department_id) ORDER BY department.name;",
+      (err, res) => {
+        if (err) throw err;
+        console.table(res);
+        runQuery();
+      }
+    );
+}
 
 
 
