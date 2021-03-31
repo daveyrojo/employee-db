@@ -219,7 +219,8 @@ const addDepartment = () => {
 };
 
 const addRole = () => {
-
+  connection.query(
+    "SELECT role.title AS Title, role.salary AS Salary, role.department_id AS Department FROM role",
 };
 
 const updateEmp = () => {
