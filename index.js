@@ -35,10 +35,68 @@ connection.connect((err) => {
 connection.query = util.promisify(connection.query);
 
 //arrays to add to
-
+let managerArr = [];
 let depArr = [];
 let roleArr = [];
-let managerArr = [];
+
+//functions for inquirer
+
+const runQuery = () => {
+  inquirer.prompt([
+    {
+      name: "intro",
+      type: "rawlist",
+      message: "What would you like to do?",
+      choices: [
+        "View All Employees",
+        "View All Employees by Department",
+        "View All Employees by Roles",
+        "Add Employee",
+        "Add Role",
+        "Add Department",
+        "Update Employee",
+      ],
+    },
+  ])
+  .then((answer) => {
+    switch (answer.intro) {
+      case "View All Employees":
+        viewAllEmp();
+        break;
+      
+      case "View All Employees by Department":
+        viewByDepartment();
+        break;
+      
+      case "View All Employees by Role":
+        viewEmpByRole();
+        break;
+      
+      case "Add Employee":
+        addEmp();
+        break;
+
+      case "Add Deparment":
+        addDepartment();
+        break;
+      
+      case "Add Role":
+        addRole();
+        break;
+
+      case "Update Employee":
+        updateEmp();
+        break;
+      
+      default:
+        console.log(`Invalid choice: ${answer.intro}`);
+        break;
+    }
+  });
+};
+
+
+
 
 
 module.exports = connection;
