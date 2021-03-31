@@ -68,7 +68,7 @@ const runQuery = () => {
         viewByDepartment();
         break;
       
-      case "View All Employees by Role":
+      case "View All Employees by Roles":
         viewEmpByRole();
         break;
       
@@ -115,6 +115,61 @@ const viewByDepartment = () => {
         runQuery();
       }
     );
+}
+
+const viewEmpByRole = () => {
+  connection.query(
+    "SELECT  role.title, employee.id, employee.first_name, employee.last_name, department.name AS department FROM employee LEFT JOIN role ON (role.id = employee.role_id) LEFT JOIN department ON (department.id = role.department_id) ORDER BY role.title;",
+    (err, res) => {
+      if (err) throw err;
+      console.table(res);
+      runQuery();
+    }
+  );
+};
+
+const addEmp = () => {
+  inquirer.prompt([
+    {
+      name: "firstname",
+      type: "input",
+      message: "What is the employee's first name?",
+    },
+    {
+      name: "lastname",
+      type: "input",
+      message: "What is the employee's last name?",
+    },
+    {
+      name: "role",
+      type: "list",
+      message: "What is the employee's role?",
+      choices: role(),
+    },
+    {
+      name: "choice",
+      type: "rawlist",
+      message: "Whats the employee's managers name?",
+      choices: manager(),
+    },
+  ])
+  .then((val) => {
+    let roleId = role().indexOf(va.role) + 1;
+    let managerId = manager().indexOf(val.manager) + 1;
+    connection.query(
+      "INSERT INTO employee SET ? ",
+      {
+        first_name: val.firstname,
+        last_name: val.lastname,
+        manager_id: managerId,
+        role_id: roleId,
+      },
+      (err) => {
+        if (err) throw err;
+        run();
+      }
+    );
+  })
 }
 
 
