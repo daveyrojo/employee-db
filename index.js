@@ -170,6 +170,30 @@ const addEmp = () => {
       }
     );
   })
+};
+
+const role = () => {
+  connection.query("SELECT * FROM role", (err, res) => {
+    if (err) throw err;
+    for (var i = 0; i < res.length; i++) {
+      roleArr.push(res[i].title);
+    }
+  });
+
+  return roleArr;
+};
+
+const manager = () => {
+  connection.query(
+    "SELECT first_name, last_name FROM employee WHERE manager_id IS NULL",
+    (err, res) => {
+      if (err) throw err;
+      for (var i = 0; i < res.length; i++) {
+        managerArr.push(res[i].first_name);
+      }
+    }
+  );
+  return managerArr;
 }
 
 
