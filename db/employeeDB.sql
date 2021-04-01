@@ -29,17 +29,28 @@ CREATE TABLE employee (
     CONSTRAINT fk_manager FOREIGN KEY (manager_id) REFERENCES employee(id) ON DELETE CASCADE 
 );
 
-INSERT INTO department (name)
-VALUES ('sales');
-
 INSERT INTO role (title, salary, department_id)
-VALUES ('Sales Manager', '100,000', 1);
+VALUE ("Engineer Manager", 180000, 1);
+INSERT INTO role (title, salary, department_id)
+VALUE ("IT Manager", 250000, 2);
+INSERT INTO role (title, salary, department_id)
+VALUE ("HR Manager", 125000, 3);
+INSERT INTO role (title, salary, department_id)
+VALUE ("Sales Manager", 350000, 4);
 
 INSERT INTO employee (first_name, last_name, role_id, manager_id)
-VALUES ('David', 'Eldridge', 1, 1);
--- constraint foreign key references
- -- manager id references role_id
-    
+VALUE ("Joanie", "Uni de Corn", 1, null);
+INSERT INTO employee (first_name, last_name, role_id, manager_id)
+VALUE ("Susan", "Coolidge", 2, null);
+INSERT INTO employee (first_name, last_name, role_id, manager_id)
+VALUE ("Richard", "Dumby", 3, null);
+INSERT INTO employee (first_name, last_name, role_id, manager_id)
+VALUE ("David", "El Rojo", 4, null);
 
-    -- foreign key references cascade (line14, 24 & 26)---- LOOK UP -- something along the lines of tying all the tables together
-    -- will also have to do this in the role table as well
+SELECT * FROM department;
+SELECT * FROM role;
+SELECT * FROM employee;
+
+
+
+

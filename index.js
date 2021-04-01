@@ -15,6 +15,9 @@
 //auto increment doesn't seem to actually work - i have to assign values
 //how do you have lists show and not disappear super fast
 
+
+//last couple problems - department_id is sending department name when adding role
+//manager id is registering as 0
 const inquirer = require("inquirer");
 const mysql = require("mysql");
 const util = require("util");
@@ -36,7 +39,7 @@ connection.query = util.promisify(connection.query);
 
 //arrays to add to
 let managerArr = [];
-let depArr = [];
+let deptArr = [];
 let roleArr = [];
 
 //functions for inquirer
@@ -148,25 +151,27 @@ const addEmp = () => {
     },
     {
       name: "choice",
-      type: "rawlist",
+      type: "list",
       message: "What's the employee's managers name?",
       choices: manager(),
     },
   ])
   .then((val) => {
-    let roleId = role().indexOf(va.role) + 1;
+    let roleId = role().indexOf(val.role) + 1;
     let managerId = manager().indexOf(val.manager) + 1;
+    console.log("ROLE ID: " + roleId);
+    console.log("MANAGER ID: " + managerId);
     connection.query(
       "INSERT INTO employee SET ? ",
       {
         first_name: val.firstname,
         last_name: val.lastname,
-        manager_id: managerId,
         role_id: roleId,
+        manager_id: managerId,
       },
       (err) => {
         if (err) throw err;
-        run();
+        runQuery();
       }
     );
   })
@@ -185,11 +190,20 @@ const role = () => {
 
 const manager = () => {
   connection.query(
-    "SELECT first_name, last_name FROM employee WHERE manager_id IS NULL",
+    "SELECT first_name, last_name, role_id FROM employee WHERE manager_id IS NULL",
     (err, res) => {
       if (err) throw err;
       for (var i = 0; i < res.length; i++) {
-        managerArr.push(res[i].first_name);
+        console.log('\n');
+        console.log("Manager Loop: " + res[i].first_name);
+        console.log("Manager Loop: " + res[i].last_name);
+        console.log("Manager Loop: " + res[i].role_id);
+        console.log("\n");
+        let mgmt = res[i];
+        managerArr.push({
+          choice: mgmt.first_name,
+          value: mgmt.role_id,
+        });
       }
     }
   );
@@ -199,7 +213,7 @@ const manager = () => {
 const addDepartment = () => {
   inquirer.prompt([
     {
-      name: "department",
+      name: "name",
       type: "input",
       message: "What is the departments name?"
     },
@@ -208,7 +222,7 @@ const addDepartment = () => {
     connection.query(
       "INSERT INTO department SET ? ",
       {
-        name: res.department,
+        name: res.name,
       },
       (err) => {
         if (err) throw err;
@@ -227,7 +241,7 @@ const addRole = () => {
           {
             name: "role",
             type: "input",
-            message: "What's the poisitons role?",
+            message: "What's the position's role?",
           },
           {
             name: "salary",
@@ -259,18 +273,69 @@ const addRole = () => {
   );
 };
 
+
+
 const department = () => {
   connection.query("SELECT * FROM department", (err, res) => {
+   
     if (err) throw err;
     for (var i = 0; i < res.length; i++) {
-      deptArr.push(res[i].name);
+      let dept = res[i];
+      // console.log("\n\n\n" + "DEPARTMENT: " + res[i].name + res[i].id + "\n\n\n");
+      deptArr.push({
+        name: dept.name, 
+        value: dept.id});
     }
   });
   return deptArr;
 };
 
-const updateEmp = () => {
 
+const updateEmp = () => {
+  connection.query(
+    "SELECT employee.last_name, role.title FROM employee JOIN role ON employee.role_id = role.id;",
+    (err, res) => {
+      if (err) throw err;
+      console.log(res);
+      inquirer
+        .prompt([
+          {
+            name: "lastName",
+            type: "rawlist",
+            message: "What's the Employee's last name? ",
+            choices: () => {
+              var lastName = [];
+              for (var i = 0; i < res.length; i++) {
+                lastName.push(res[i].last_name);
+              }
+              return lastName;
+            },
+          },
+          {
+            name: "role",
+            type: "rawlist",
+            message: "What's the Employees new title? ",
+            choices: role(),
+          },
+        ])
+        .then((val) => {
+          var roleId = role().indexOf(val.role) + 1;
+          connection.query(
+            "UPDATE employee SET WHERE ? ",
+            {
+              last_name: val.lastName,
+            },
+            {
+              role_id: roleId,
+            },
+            function (err) {
+              if (err) throw err;
+              runQuery();
+            }
+          );
+        });
+    }
+  );
 };
 
 
