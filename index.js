@@ -329,13 +329,13 @@ const updateEmp = () => {
           let roleId = val.role;
           let name = val.name;
           connection.query(
-            "UPDATE employee SET WHERE ? ",
-            {
+            "UPDATE employee SET ? WHERE ? ",
+           [ {
               last_name: name.substr(name.indexOf(" ") + 1),
             },
             {
               role_id: roleId,
-            },
+            }],
             function (err) {
               if (err) throw err;
               runQuery();
