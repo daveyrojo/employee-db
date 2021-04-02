@@ -29,6 +29,15 @@ CREATE TABLE employee (
     CONSTRAINT fk_manager FOREIGN KEY (manager_id) REFERENCES employee(id) ON DELETE CASCADE 
 );
 
+INSERT INTO department (name)
+VALUE ("Engineering");
+INSERT INTO department (name)
+VALUE ("IT");
+INSERT INTO department (name)
+VALUE ("Human Resources");
+INSERT INTO department (name)
+VALUE ("Sales");
+
 INSERT INTO role (title, salary, department_id)
 VALUE ("Engineer Manager", 180000, 1);
 INSERT INTO role (title, salary, department_id)

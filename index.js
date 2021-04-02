@@ -38,7 +38,7 @@ connection.connect((err) => {
 connection.query = util.promisify(connection.query);
 
 //arrays to add to
-let managerArr = [];
+
 let deptArr = [];
 let roleArr = [];
 
@@ -92,7 +92,7 @@ const runQuery = () => {
         break;
       
       default:
-        console.log(`Invalid choice: ${answer.intro}`);
+        // console.log(`Invalid choice: ${answer.intro}`);
         break;
     }
   });
@@ -150,17 +150,17 @@ const addEmp = () => {
       choices: role(),
     },
     {
-      name: "choice",
+      name: "manager",
       type: "list",
       message: "What's the employee's managers name?",
       choices: manager(),
     },
   ])
   .then((val) => {
-    let roleId = role().indexOf(val.role) + 1;
-    let managerId = manager().indexOf(val.manager) + 1;
-    console.log("ROLE ID: " + roleId);
-    console.log("MANAGER ID: " + managerId);
+    let roleId = val.role;
+    let managerId = val.manager;
+    // console.log("ROLE ID: " + roleId);
+    // console.log("MANAGER ID: " + managerId);
     connection.query(
       "INSERT INTO employee SET ? ",
       {
@@ -180,8 +180,12 @@ const addEmp = () => {
 const role = () => {
   connection.query("SELECT * FROM role", (err, res) => {
     if (err) throw err;
-    for (var i = 0; i < res.length; i++) {
-      roleArr.push(res[i].title);
+    for (let i = 0; i < res.length; i++) {
+      // console.log("ROLE: " + res[i].title + '\n' + res[i].department_id);
+      roleArr.push({
+        name: res[i].title,
+        value: res[i].department_id
+      });
     }
   });
 
@@ -189,20 +193,21 @@ const role = () => {
 };
 
 const manager = () => {
+  let managerArr = [];
   connection.query(
     "SELECT first_name, last_name, role_id FROM employee WHERE manager_id IS NULL",
     (err, res) => {
       if (err) throw err;
-      for (var i = 0; i < res.length; i++) {
-        console.log('\n');
-        console.log("Manager Loop: " + res[i].first_name);
-        console.log("Manager Loop: " + res[i].last_name);
-        console.log("Manager Loop: " + res[i].role_id);
-        console.log("\n");
-        let mgmt = res[i];
+      for (let i = 0; i < res.length; i++) {
+
+        let managerName = `${res[i].first_name} ${res[i].last_name}`;
+        
+        let managerId = res[i].role_id;
+       
+    
         managerArr.push({
-          choice: mgmt.first_name,
-          value: mgmt.role_id,
+          name: managerName,
+          value: managerId
         });
       }
     }
@@ -279,7 +284,7 @@ const department = () => {
   connection.query("SELECT * FROM department", (err, res) => {
    
     if (err) throw err;
-    for (var i = 0; i < res.length; i++) {
+    for (let i = 0; i < res.length; i++) {
       let dept = res[i];
       // console.log("\n\n\n" + "DEPARTMENT: " + res[i].name + res[i].id + "\n\n\n");
       deptArr.push({
@@ -293,22 +298,24 @@ const department = () => {
 
 const updateEmp = () => {
   connection.query(
-    "SELECT employee.last_name, role.title FROM employee JOIN role ON employee.role_id = role.id;",
+    "SELECT employee.first_name, employee.last_name, role.title FROM employee JOIN role ON employee.role_id = role.id;",
     (err, res) => {
       if (err) throw err;
-      console.log(res);
+      // console.log(res);
       inquirer
         .prompt([
           {
-            name: "lastName",
+            name: "name",
             type: "rawlist",
-            message: "What's the Employee's last name? ",
+            message: "What's the Employee's full name? ",
             choices: () => {
-              var lastName = [];
-              for (var i = 0; i < res.length; i++) {
-                lastName.push(res[i].last_name);
+              let fullName = [];
+              for (let i = 0; i < res.length; i++) {
+                let name = res[i].first_name + ' ' + res[i].last_name
+                fullName.push(name);
+                console.log("last_name: " + name.substr(name.indexOf(' ') + 1));
               }
-              return lastName;
+              return fullName;
             },
           },
           {
@@ -319,11 +326,12 @@ const updateEmp = () => {
           },
         ])
         .then((val) => {
-          var roleId = role().indexOf(val.role) + 1;
+          let roleId = val.role;
+          let name = val.name;
           connection.query(
             "UPDATE employee SET WHERE ? ",
             {
-              last_name: val.lastName,
+              last_name: name.substr(name.indexOf(" ") + 1),
             },
             {
               role_id: roleId,
